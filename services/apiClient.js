@@ -1,5 +1,4 @@
 import axios from "axios";
-import { AsyncStorage } from '@react-native-community/async-storage'
 class ApiClient {
 	constructor(remoteHostUrl) {
 		this.remoteHostUrl = remoteHostUrl;
@@ -9,14 +8,14 @@ class ApiClient {
 
 	setToken(token) {
 		this.token = token;
-		AsyncStorage.setItem(this.tokenName, token);
+		// AsyncStorage.setItem(this.tokenName, token);
 	}
 
 	async request({ endpoint, method = `GET`, data = {} }) {
 		const url = `${this.remoteHostUrl}${endpoint}`;
 
 		const headers = {
-			"Content-Type": "application/json",
+			"Content-Type": "application/x-www-form-urlencoded", Accept: "application/json",
 			Authorization: this.token ? `Bearer ${this.token}` : "",
 		};
 
@@ -26,6 +25,7 @@ class ApiClient {
 		} catch (error) {
 			console.error("APIclient.makeRequest.error:");
 			console.error({ errorResponse: error.response });
+			console.error(error)
 			const message = error?.response?.data?.error?.message;
 			return { data: null, error: message || String(error) };
 		}
@@ -52,7 +52,7 @@ class ApiClient {
 	}
 
 	async logoutUser() {
-		localStorage.removeItem(this.tokenName);
+		// localStorage.removeItem(this.tokenName);
 	}
 
     async fetchPosts(){
@@ -62,10 +62,10 @@ class ApiClient {
         })
     }
 
-    async fetchUserData(endpoint) {
+    async fetchUserData(username) {
 		// Endpoint format is `/user/$[user.username}/`
         return await this.request({
-            endpoint: endpoint,
+            endpoint: `/user/${username}`,
             method: `GET`
         })
     }
@@ -98,5 +98,5 @@ class ApiClient {
 
 }
 
-const API = new ApiClient("http://localhost:4000");
+const API = new ApiClient("https://quillpoems.herokuapp.com");
 export default API;
